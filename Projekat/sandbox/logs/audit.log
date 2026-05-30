@@ -1,12 +1,14 @@
-[2026-05-30T14:15:21.988615] SUCCESS | Script: sandbox/test_scripts/benign/hello.py | Details: Uspešno izvršeno
-[2026-05-30T14:17:19.656140] BLOCKED | Script: sandbox/test_scripts/malicious/os_system.py | Details: Statička analiza je detektovala bezbednosne probleme:
-  - Zabranjen import modula: 'os' na liniji 2
-[2026-05-30T14:17:50.194299] TIMEOUT | Script: sandbox/test_scripts/malicious/infinite_loop.py | Details: Prekoračen limit od True sekundi
-[2026-05-30T14:18:28.971764] BLOCKED | Script: sandbox/test_scripts/malicious/socket_test.py | Details: Statička analiza je detektovala bezbednosne probleme:
-  - Zabranjen import modula: 'socket' na liniji 2
-[2026-05-30T14:29:58.003947] BLOCKED | Script: sandbox/test_scripts/malicious/socket_test.py | Details: Statička analiza je detektovala bezbednosne probleme:
-  - Zabranjen import modula: 'socket' na liniji 1
-[2026-05-30T14:30:07.771466] TIMEOUT | Script: sandbox/test_scripts/malicious/infinite_loop.py | Details: Prekoračen limit od True sekundi
-[2026-05-30T14:30:10.078156] BLOCKED | Script: sandbox/test_scripts/malicious/os_system.py | Details: Statička analiza je detektovala bezbednosne probleme:
-  - Zabranjen import modula: 'os' na liniji 1
-[2026-05-30T14:30:17.106413] SUCCESS | Script: sandbox/test_scripts/benign/hello.py | Details: Uspešno izvršeno
+﻿{"event": "user_registered", "timestamp": "2026-05-30T21:29:42.135000+00:00", "user_id": 5, "username": "student1"}
+{"event": "function_uploaded", "findings": [], "function_id": "80dd7129-7245-4214-b56b-34a324529097", "status": "ready", "timestamp": "2026-05-30T21:29:51.487000+00:00", "user_id": 5}
+{"blocked_by_policy": false, "event": "sandbox_execution_success", "exit_code": 0, "reason": "", "script_path": "backend/storage/uploads/80dd7129-7245-4214-b56b-34a324529097/hello.py", "success": true, "timeout": false, "timestamp": "2026-05-30T21:29:58.784209+00:00"}
+{"event": "function_executed", "function_id": "80dd7129-7245-4214-b56b-34a324529097", "return_code": 0, "timestamp": "2026-05-30T21:29:58.784911+00:00"}
+{"event": "function_uploaded", "findings": ["Forbidden module import: 'os' on line 1"], "function_id": "d32817cd-2a35-461b-adaf-280744fcbfc6", "status": "rejected", "timestamp": "2026-05-30T21:30:09.264279+00:00", "user_id": 5}
+{"event": "user_registered", "timestamp": "2026-05-30T21:36:29.044583+00:00", "user_id": 13, "username": "student-71f109f1"}
+{"event": "function_uploaded", "findings": [], "function_id": "6972750b-1c73-413b-be33-7a041baa17db", "status": "ready", "timestamp": "2026-05-30T21:36:29.093558+00:00", "user_id": 13}
+{"blocked_by_policy": false, "event": "sandbox_execution_success", "exit_code": 0, "reason": "", "script_path": "backend/storage/uploads/6972750b-1c73-413b-be33-7a041baa17db/main.py", "success": true, "timeout": false, "timestamp": "2026-05-30T21:36:29.539779+00:00"}
+{"event": "function_executed", "function_id": "6972750b-1c73-413b-be33-7a041baa17db", "return_code": 0, "timestamp": "2026-05-30T21:36:29.539779+00:00"}
+{"event": "function_uploaded", "findings": ["Forbidden module import: 'os' on line 1"], "function_id": "e8ecc0eb-c49c-40ae-866b-af7927e6b77e", "status": "rejected", "timestamp": "2026-05-30T21:36:29.549803+00:00", "user_id": 13}
+{"blocked_by_policy": false, "event": "sandbox_execution_success", "exit_code": 0, "reason": "", "script_path": "sandbox/test_scripts/benign/hello.py", "success": true, "timeout": false, "timestamp": "2026-05-30T21:41:54.701286+00:00"}
+{"blocked_by_policy": true, "event": "sandbox_execution_blocked", "exit_code": 1, "reason": "Static analysis detected security issues:\n  - Forbidden module import: 'os' on line 1", "script_path": "sandbox/test_scripts/malicious/os_system.py", "success": false, "timeout": false, "timestamp": "2026-05-30T21:41:54.704301+00:00"}
+{"blocked_by_policy": true, "event": "sandbox_execution_blocked", "exit_code": 1, "reason": "Static analysis detected security issues:\n  - Forbidden module import: 'socket' on line 1", "script_path": "sandbox/test_scripts/malicious/socket_test.py", "success": false, "timeout": false, "timestamp": "2026-05-30T21:41:54.708045+00:00"}
+{"blocked_by_policy": false, "event": "sandbox_execution_timeout", "exit_code": 124, "reason": "Timeout", "script_path": "sandbox/test_scripts/malicious/infinite_loop.py", "stderr_summary": "Execution stopped: timeout of 5 seconds exceeded", "success": false, "timeout": true, "timestamp": "2026-05-30T21:41:59.731295+00:00"}

@@ -1,96 +1,100 @@
 import ast
-import os
-from typing import Tuple
+from pathlib import Path
+from typing import TypeAlias
+
+AnalysisResult: TypeAlias = tuple[bool, str]
 
 FORBIDDEN_MODULES = {
-    'os',
-    'subprocess',
-    'sys',
-    'socket',
-    'requests',
-    'urllib',
-    'shutil',
-    'pathlib',
-    'glob',
-    'ctypes',
-    'multiprocessing',
-    'threading'
+    "os",
+    "subprocess",
+    "sys",
+    "socket",
+    "requests",
+    "urllib",
+    "shutil",
+    "pathlib",
+    "glob",
+    "ctypes",
+    "multiprocessing",
+    "threading",
 }
 
 FORBIDDEN_BUILTINS = {
-    'eval',
-    'exec',
-    'compile',
-    'open',
-    '__import__',
-    'input',
+    "eval",
+    "exec",
+    "compile",
+    "open",
+    "__import__",
+    "input",
 }
 
 
 class CodeAnalyzer(ast.NodeVisitor):
     def __init__(self):
-        self.violations = []
-    
+        self.violations: list[str] = []
+
     def visit_Import(self, node):
         for alias in node.names:
-            module_name = alias.name.split('.')[0]
+            module_name = alias.name.split(".")[0]
             if module_name in FORBIDDEN_MODULES:
                 self.violations.append(
-                    f"Zabranjen import modula: '{module_name}' na liniji {node.lineno}"
+                    f"Forbidden module import: '{module_name}' on line {node.lineno}"
                 )
         self.generic_visit(node)
-    
+
     def visit_ImportFrom(self, node):
         if node.module:
-            module_name = node.module.split('.')[0]
+            module_name = node.module.split(".")[0]
             if module_name in FORBIDDEN_MODULES:
                 self.violations.append(
-                    f"Zabranjen import iz modula: '{module_name}' na liniji {node.lineno}"
+                    f"Forbidden module import: '{module_name}' on line {node.lineno}"
                 )
         self.generic_visit(node)
-    
+
     def visit_Call(self, node):
         if isinstance(node.func, ast.Name):
             func_name = node.func.id
             if func_name in FORBIDDEN_BUILTINS:
                 self.violations.append(
-                    f"Zabranjena funkcija: '{func_name}()' na liniji {node.lineno}"
+                    f"Forbidden function call: '{func_name}()' on line {node.lineno}"
                 )
         self.generic_visit(node)
 
 
-def analyze_code(script_path: str) -> Tuple[bool, str]:
-    if not os.path.exists(script_path):
-        return False, f"Fajl ne postoji: {script_path}"
-    
-    try:
-        with open(script_path, 'r', encoding='utf-8') as f:
-            code = f.read()
-        
-        tree = ast.parse(code, filename=script_path)
-        
-        analyzer = CodeAnalyzer()
-        analyzer.visit(tree)
-        
-        if analyzer.violations:
-            reason = "Statička analiza je detektovala bezbednosne probleme:\n" + \
-                     "\n".join(f"  - {v}" for v in analyzer.violations)
-            return False, reason
-        
-        return True, ""
-    
-    except SyntaxError as e:
-        return False, f"Sintaksna greška u kodu: {str(e)}"
-    
-    except Exception as e:
-        return False, f"Greška tokom analize: {str(e)}"
+def analyze_code(script_path: str | Path) -> AnalysisResult:
+    path = Path(script_path)
+    if not path.exists():
+        return False, f"File does not exist: {path}"
 
-if __name__ == "__main__":
-    test_file = "test_scripts/malicious/os_system.py"
-    is_safe, reason = analyze_code(test_file)
-    
-    if is_safe:
-        print(f"✓ Kod je bezbedan: {test_file}")
-    else:
-        print(f"✗ Kod nije bezbedan: {test_file}")
-        print(reason)
+    try:
+        source = path.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=str(path))
+    except SyntaxError as exc:
+        return False, f"Syntax error: {exc.msg} on line {exc.lineno}"
+    except OSError as exc:
+        return False, f"Cannot read file: {exc}"
+
+    analyzer = CodeAnalyzer()
+    analyzer.visit(tree)
+
+    if analyzer.violations:
+        reason = "Static analysis detected security issues:\n" + "\n".join(
+            f"  - {violation}" for violation in analyzer.violations
+        )
+        return False, reason
+
+    return True, ""
+
+
+def analyze_python_file(script_path: str | Path) -> dict:
+    is_safe, reason = analyze_code(script_path)
+    findings = [
+        line.strip(" -")
+        for line in reason.splitlines()
+        if line.strip() and not line.startswith("Static analysis")
+    ]
+    return {
+        "allowed": is_safe,
+        "findings": findings,
+        "engine": "sandbox.static_analysis",
+    }

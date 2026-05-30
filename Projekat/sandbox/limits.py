@@ -1,9 +1,15 @@
 TIMEOUT = 5
 
+BUILD_TIMEOUT = 120
+
 MEMORY_LIMIT = "128m"
 
 CPU_LIMIT = "0.5"
 
+PIDS_LIMIT = 64
+
 DOCKER_IMAGE = "python:3.10-slim"
+
+DEPENDENCY_IMAGE_PREFIX = "oblak-function"
 
 USER_ID = "1000:1000"

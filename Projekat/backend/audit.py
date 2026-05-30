@@ -3,18 +3,24 @@ import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent
-LOG_DIR = BASE_DIR / "logs"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+LOG_DIR = PROJECT_ROOT / "sandbox" / "logs"
 LOG_FILE = LOG_DIR / "audit.log"
+AUDIT_LOGGER_NAME = "oblak.audit"
 
 
 def configure_audit_logger():
     LOG_DIR.mkdir(parents=True, exist_ok=True)
-    logging.basicConfig(
-        filename=LOG_FILE,
-        level=logging.INFO,
-        format="%(message)s",
-    )
+    logger = logging.getLogger(AUDIT_LOGGER_NAME)
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    if logger.handlers:
+        return
+
+    handler = logging.FileHandler(LOG_FILE, encoding="utf-8")
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(handler)
 
 
 def audit(event: str, **fields):
@@ -23,4 +29,6 @@ def audit(event: str, **fields):
         "event": event,
         **fields,
     }
-    logging.info(json.dumps(record, ensure_ascii=False, sort_keys=True))
+    logging.getLogger(AUDIT_LOGGER_NAME).info(
+        json.dumps(record, ensure_ascii=False, sort_keys=True)
+    )

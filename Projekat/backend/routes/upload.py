@@ -1,15 +1,21 @@
 import json
 import shutil
+import sys
 import uuid
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request, url_for
 from werkzeug.utils import secure_filename
 
-from analysis import analyze_python_file
 from audit import audit
 from auth_required import auth_required
 from database.db import get_connection
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from sandbox.static_analysis import analyze_python_file
 
 upload_bp = Blueprint("upload", __name__, url_prefix="/functions")
 
@@ -24,14 +30,20 @@ def upload_function(current_user):
     code_file = request.files.get("code")
     requirements_file = request.files.get("requirements")
     name = (request.form.get("name") or "").strip()
-    entrypoint = (request.form.get("entrypoint") or "main.py").strip()
+    entrypoint = secure_filename((request.form.get("entrypoint") or "main.py").strip())
 
     if not code_file or not name:
         return jsonify({"error": "Fields 'name' and file 'code' are required"}), 400
 
     code_name = secure_filename(code_file.filename or "")
+    if not entrypoint:
+        entrypoint = code_name or "main.py"
+
     if Path(code_name).suffix not in ALLOWED_CODE_EXTENSIONS:
-        return jsonify({"error": "Only single .py uploads are supported by this backend part"}), 400
+        return jsonify({"error": "Only single .py uploads are supported"}), 400
+
+    if Path(entrypoint).suffix not in ALLOWED_CODE_EXTENSIONS:
+        return jsonify({"error": "Entrypoint must be a .py file"}), 400
 
     function_id = str(uuid.uuid4())
     function_dir = UPLOAD_DIR / function_id

@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    working_dir: /app/backend
+    command: python app.py
+    ports:
+      - "5000:5000"
+    volumes:
+      - ..:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      FLASK_ENV: development
+      OBLAK_HOST: 0.0.0.0
+      OBLAK_PORT: 5000

@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify
 
 from audit import configure_audit_logger
@@ -29,4 +31,6 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    host = os.environ.get("OBLAK_HOST", "127.0.0.1")
+    port = int(os.environ.get("OBLAK_PORT", "5000"))
+    app.run(host=host, port=port, debug=True)
