@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.oblak_token
+backend/storage/oblak.db
+backend/storage/uploads/*
+!backend/storage/uploads/.gitkeep
+backend/logs/*.log
