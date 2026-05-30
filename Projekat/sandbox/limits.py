@@ -1,0 +1,9 @@
+TIMEOUT = 5
+
+MEMORY_LIMIT = "128m"
+
+CPU_LIMIT = "0.5"
+
+DOCKER_IMAGE = "python:3.10-slim"
+
+USER_ID = "1000:1000"
